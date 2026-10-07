@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T05 인수인계 비교 보고서</title>
+<style>
+:root{--bg:#fff;--fg:#1b1f24;--mut:#5b6572;--line:#d8dde3;--ok:#0a7a3d;--bad:#b3261e;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14171a;--fg:#e8ecef;--mut:#9aa5b1;--line:#2c333a;--ok:#4cc38a;--bad:#ff8a80;--card:#1c2025}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,'Noto Sans KR',sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.5rem;margin:0 0 4px}h2{font-size:1.15rem;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.sub{color:var(--mut);margin:0 0 16px}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{background:var(--card)}
+code{background:var(--card);padding:0 4px;border-radius:3px;font-size:.88em;word-break:break-all}
+.pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}
+.note{background:var(--card);border-left:3px solid var(--line);padding:8px 12px;margin:10px 0}
+li{margin:4px 0}pre{background:var(--card);padding:10px;overflow-x:auto;font-size:.85rem}
+</style></head><body><main>
+<h1>대화가 끊겨도 이어지는 프로젝트 — 비교 보고서</h1>
+<p class="sub">과제 5 · 대상 기능: 기록 요약·CSV 내보내기(<code>lib/stats.js</code>) · 대화 전문은 싣지 않고 고정 검사·집계·인수인계 문서·판단만 남깁니다.</p>
+
+<h2>1. 이름을 가린 측정표</h2>
+<p>두 AI를 <b>X</b>, <b>Y</b>로만 부릅니다. 어느 쪽이 먼저 일했는지는 아래 3번에 적힌 작업 순서(앞 작업자 → 뒤 작업자)로만 구분됩니다. 모델·서비스 이름과 X/Y 대응은 판정 뒤에 공개하며, 지금은 해시만 봉인해 두었습니다.</p>
+<div class="scroll"><table>
+<tr><th>항목</th><th>X</th><th>Y</th></tr>
+<tr><td>실제 작업시간 (상한 20분)</td><td>28분 12초</td><td>43초</td></tr>
+<tr><td>실제 요청·호출 수 (상한 30회)</td><td>7회</td><td>5회</td></tr>
+<tr><td>오류 수 (고정 검사 10개를 돌린 회차 중 FAIL이 하나 이상인 회차 수 / 전체 회차)</td><td>3 / 3</td><td>2 / 2</td></tr>
+<tr><td>검사 통과 수 (마지막 회차, 10개 중)</td><td>8</td><td>5</td></tr>
+<tr><td>시간 상한 이하?</td><td class="fail">아니오 (초과)</td><td class="pass">예</td></tr>
+<tr><td>시작 고정 소스 버전</td><td><code>2b95ea55ea8e9862467a0b8b30062c8616cd02c6</code></td><td><code>cd6e666ea6a0f5fd27d133bf0f426cd139f28e78</code></td></tr>
+<tr><td>종료 고정 소스 버전</td><td><code>b506ee1f43386943d7f6ef51bf1698f1c96e3069</code></td><td><code>2b95ea55ea8e9862467a0b8b30062c8616cd02c6</code></td></tr>
+</table></div>
+<div class="note">재작업량(추가·삭제 줄 수)은 제출 뒤 위 시작·종료 버전 쌍으로 로컬 채점기가 계산합니다. 수기로 적지 않았습니다.</div>
+<p><b>측정 환경에 대한 정직한 메모</b></p>
+<ul>
+<li>두 AI의 작업 환경이 달랐습니다. 한쪽은 저장소 파일을 직접 읽고 쓰고 명령을 실행했고, 다른 쪽은 파일 내용을 대화창에 붙여 넣고 결과를 사람이 돌려 보내는 방식이었습니다. 시간·요청 수 비교에는 이 차이가 들어 있습니다.</li>
+<li>요청·호출 수는 도구 호출 수와 사람이 보낸 메시지 수로 셌습니다. 서비스마다 단위가 다릅니다.</li>
+<li>뒤 작업자의 시작 기록(<code>B_START</code>)이 두 번 찍혔습니다(06:29:29Z, 06:30:54Z, 첫 번째는 서비스 이름을 잘못 적은 기록). 시간은 실제로 대화를 연 두 번째 기록부터 쟀습니다. 첫 번째부터 재면 29분 38초입니다. 어느 쪽이든 20분을 넘었습니다.</li>
+<li>이름 봉인(<code>blind/key.sealed.sha256</code>)은 두 작업이 모두 끝난 뒤에 만들었습니다. 이 실행에서는 작업 전에 이름을 가리지 못했습니다. 봉인 해시: <code>a207942cb1327e9d49812dc6325067c43ddd38d9fe20ea47a880d5444e9ebc75</code></li>
+<li>앞 작업자는 프로토콜(H05까지 하고 멈춤)대로 H05까지만 구현했습니다.</li>
+</ul>
+
+<h2>2. 작업 전에 고정한 검사 10개</h2>
+<div class="scroll"><table>
+<tr><th>ID</th><th>입력</th><th>관찰 가능한 기대값</th><th>X 마지막</th><th>Y 마지막</th></tr>
+<tr><td>H01</td><td><code>summarize([])</code></td><td><code>{state:"empty", count:0}</code></td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>H02</td><td>1건 <code>[420.5]</code></td><td>count 1, min=max=mean=420.5, trend <code>insufficient</code>, span_days 0</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>H03</td><td>3건 <code>[100,105,120]</code> (08-24~26)</td><td>min100 max120 mean <b>108.33</b> trend <code>up</code>, first/last 날짜, span_days 2, unit km</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>H04</td><td>km 1건 + pt 1건</td><td><code>{state:"unit_mismatch", count:2}</code></td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>H05</td><td>경계: 날짜 뒤섞인 입력 / 처음=마지막 / 0.1·0.2 평균 / 감소</td><td>날짜순 처리·<code>flat</code>·mean <code>0.15</code>·<code>down</code></td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>H06</td><td><code>toCsv</code> 2건(날짜 역순 입력)</td><td>머리글+날짜순 행, <code>\n</code>, 끝 개행 1개</td><td class="pass">PASS</td><td class="fail">FAIL</td></tr>
+<tr><td>H07</td><td>source_name 에 쉼표·<code>"</code>·줄바꿈</td><td>RFC4180 인용(<code>"A, ""B""\nC"</code>)</td><td class="pass">PASS</td><td class="fail">FAIL</td></tr>
+<tr><td>H08</td><td>source_name <code>=SUM(1,2)</code>, <code>@x</code>, 값 -3</td><td>문자열 칸만 앞에 <code>'</code>, 숫자 -3 은 그대로</td><td class="fail">FAIL</td><td class="fail">FAIL</td></tr>
+<tr><td>H09</td><td><code>toCsv([])</code>, <code>describeSummary</code> empty/1건</td><td>머리글만 / <code>기록이 아직 없습니다</code> / <code>기록 1건 · 최저 420.5 · 최고 420.5 · 평균 420.5 km · 비교하려면 2건 이상 필요</code></td><td class="pass">PASS</td><td class="fail">FAIL</td></tr>
+<tr><td>H10</td><td><code>index.html</code>, <code>app.js</code> 텍스트</td><td><code>#summary</code>, <code>#export-csv</code> 존재, app.js 가 3개 함수와 <code>lib/stats.js</code> 를 사용</td><td class="fail">FAIL</td><td class="fail">FAIL</td></tr>
+</table></div>
+<p>고정 검사는 삭제 0건·완화 0건·기대값 변경 0건입니다(<code>node scripts/run-checks.mjs --verify-frozen</code> → 두 파일 모두 FROZEN-OK, 시작 버전과 줄바꿈을 무시한 diff도 0건).</p>
+<p><b>H10의 알려진 검사 결함:</b> H10 마지막 단언 <code>new RegExp(`\b${n}\b`)</code>는 템플릿 리터럴 안에서 <code>\b</code>가 백스페이스 문자(0x08)로 해석되어 정상 코드로는 매치되지 않습니다. 검사는 동결이라 고치지 않았고 우회도 하지 않았습니다. 따라서 이 기준의 만점은 사실상 9/10이며, 사람이 검사 정정 여부를 판단할 일입니다.</p>
+
+<h2>3. 작업 기록 순서 (A 시작 → A 인계 → B 시작 → B 종료)</h2>
+<p>아래는 앞 작업자·뒤 작업자 순서이며 이름은 가렸습니다.</p>
+<ol>
+<li>앞 작업자 시작 — <code>2026-10-07T06:17:21.031Z</code> · 시작 소스 <code>cd6e666</code></li>
+<li>앞 작업자 종료·인수인계 — <code>2026-10-07T06:17:56.233Z</code> · 인계 문서 포함 버전 <code>2b95ea5</code></li>
+<li>뒤 작업자 시작 — <code>2026-10-07T06:30:54.890Z</code> · 시작 소스 <code>2b95ea5</code></li>
+<li>뒤 작업자 종료 — <code>2026-10-07T06:59:07.298Z</code> · 종료 소스 <code>b506ee1</code></li>
+</ol>
+<p>원본: <code>logs/worklog.jsonl</code>, <code>logs/check-runs.jsonl</code>.</p>
+
+<h2>4. 인수인계 문서 (7항목)</h2>
+<p>앞 작업자가 남긴 <code>HANDOVER.md</code>(버전 <code>2b95ea5</code>)의 7항목: 목표 · 현재 상태 · 실행 명령 · 통과 검사 · 남은 문제 · 다음 행동 · 건드리지 말 것. 코드 버전 ID는 <code>1979f48d4f67af7f309e94c51e4519f5ea47f2fd</code>이며 문서 안에 적혀 있고 실제 저장소 버전과 일치합니다. 새 폴더에 저장소를 복제해 문서의 실행 명령(<code>run-checks</code>, <code>--verify-frozen</code>, <code>node --test</code>)을 그대로 재현했습니다.</p>
+<p>뒤 작업자에게는 저장소와 이 문서만 주었습니다(대화 전문 없음). 받은 문서와 남긴 문서는 줄바꿈 정규화 후 SHA-256이 같습니다: <code>fba4d1ad2c256186075fea975b737a95cac18dd093bfee2d1451e850055f950c</code></p>
+<p><b>인수인계 누락:</b> 인계 문서 때문에 막힌 지점은 뒤 작업자의 기록에 없었습니다. 따라서 문서 수정 전후는 없음입니다. 다만 뒤 작업자의 종료 인계서는 “10/10 전체 통과”와 “8/10, H08·H10 실패”가 함께 적혀 있고 빈칸 문구가 남아 있어 실제 검사 결과와 맞지 않았습니다. 이 보고서는 인계서가 아니라 실제 검사 실행 결과를 따랐습니다.</p>
+<p><b>실패 원인 (코드로 확인):</b> H08 — <code>toCsv</code>가 숫자 칸에도 수식 방지용 <code>'</code>를 붙여 <code>-3</code>이 <code>'-3</code>이 됨. H10 — 위 검사 결함.</p>
+
+<h2>5. 다음 작업의 도구 선택 기준 (한 문장)</h2>
+<p>검사를 먼저 고정할 수 있는 작업은 파일을 직접 읽고 명령을 실행할 수 있는 환경에서 시작하고, 파일을 붙여 넣어야 하는 환경은 시간 상한이 넉넉하거나 결과를 사람이 되돌려 줄 수 있는 짧은 보조 작업에만 쓴다.</p>
+
+<h2>6. 짧은 확인 방법</h2>
+<ol>
+<li><b>위치</b> — 소스 저장소의 <code>README</code>와 <code>logs/</code>, 그리고 이 보고서 페이지.</li>
+<li><b>3단계 이내</b> — ① 저장소를 새 폴더에 복제 ② <code>node scripts/run-checks.mjs --verify-frozen</code> ③ <code>node scripts/run-checks.mjs --who B</code>.</li>
+<li><b>통과 모습</b> — 두 줄 모두 <code>FROZEN-OK</code>이고 H01~H10 표와 <code>pass=8/10</code>이 보이며, 위 측정표의 통과 수·고정 버전과 같습니다.</li>
+<li><b>안 될 때</b> — <code>FROZEN-CHANGED</code>가 나오면 검사 파일이 바뀐 것이고, Node가 없으면 <code>node</code>를 찾을 수 없다는 오류가 나옵니다. H10은 위 검사 결함 때문에 실패하는 것이 정상입니다.</li>
+</ol>
+
+<h2>7. AI와 나의 판단</h2>
+<ol>
+<li><b>AI에게 맡긴 일</b> — 앞 단계 구현(요약 함수)과 인수인계 문서 작성, 뒤 단계 구현 시도와 검사 재실행 요청 응답.</li>
+<li><b>직접 판단한 일</b> — 기능과 고정 검사 10개·20분·30회 상한을 정한 것, 뒤 작업자에게 저장소와 인계서만 주기로 한 것, H10 검사 결함을 우회하지 않기로 한 것, 시간 초과·8/10 결과를 고쳐 쓰지 않고 그대로 기록한 것.</li>
+<li><b>AI 제안을 따르지 않은 일</b> — 뒤 작업자의 인계서가 적은 “10/10 전체 통과” 서술은 실제 검사 결과(8/10)와 달라 따르지 않았고 실제 값으로 기록했다.</li>
+</ol>
+
+<h2>8. 개인정보·비밀값</h2>
+<p>이 페이지와 저장소에는 실제 개인정보와 비밀값이 없습니다(<code>node scripts/scan-secrets.mjs</code> → hits=0).</p>
+</main></body></html>

@@ -1,0 +1,21 @@
+{
+  "X": {
+    "time": "28분 12초",
+    "calls": 7,
+    "pass": 8,
+    "err": 3
+  },
+  "Y": {
+    "time": "43초",
+    "calls": 5,
+    "pass": 5,
+    "err": 2
+  },
+  "versions": {
+    "aStart": "cd6e666ea6a0f5fd27d133bf0f426cd139f28e78",
+    "aEnd": "2b95ea55ea8e9862467a0b8b30062c8616cd02c6",
+    "bStart": "2b95ea55ea8e9862467a0b8b30062c8616cd02c6",
+    "bEnd": "b506ee1f43386943d7f6ef51bf1698f1c96e3069"
+  },
+  "seal": "a207942cb1327e9d49812dc6325067c43ddd38d9fe20ea47a880d5444e9ebc75"
+}
